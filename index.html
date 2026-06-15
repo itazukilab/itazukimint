@@ -1,0 +1,848 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>iTAZUKi | Cyber Anime NFT Collection</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.7.0/ethers.umd.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --neon-green: #00ff66;
+            --electric-blue: #0066ff;
+            --hot-pink: #ff007f;
+            --cyber-purple: #9900ff;
+            --cyber-cyan: #00ffff;
+        }
+
+        body {
+            font-family: 'Share Tech Mono', monospace;
+            background-color: #ffffff;
+            color: #0b0f19;
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(rgba(0, 255, 102, 0.05) 1px, transparent 0),
+                radial-gradient(rgba(255, 0, 127, 0.05) 1px, transparent 0);
+            background-size: 24px 24px;
+            background-position: 0 0, 12px 12px;
+        }
+
+        .heading-font {
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 900;
+        }
+
+        /* Glitch Animation FX */
+        .glitch-text {
+            position: relative;
+            animation: glitch 3s infinite;
+        }
+        @keyframes glitch {
+            0% { text-shadow: 2px -2px 0 var(--cyber-cyan), -2px 2px 0 var(--hot-pink); }
+            2% { text-shadow: -3px 3px 0 var(--cyber-cyan), 3px -3px 0 var(--hot-pink); }
+            4% { text-shadow: 2px 2px 0 var(--neon-green), -2px -2px 0 var(--cyber-purple); }
+            6% { text-shadow: none; }
+            100% { text-shadow: none; }
+        }
+
+        /* Premium Floating & Dynamic Particles Grid */
+        #particle-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        /* Cyber Glass Panels with Multi-Layer Shadow */
+        .cyber-card {
+            background: rgba(255, 255, 255, 0.85);
+            border: 2px solid #0b0f19;
+            box-shadow: 4px 4px 0px #0b0f19;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            position: relative;
+            overflow: hidden;
+        }
+        .cyber-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 50%;
+            height: 100%;
+            background: linear-gradient(to right, transparent, rgba(0, 255, 255, 0.3), transparent);
+            transform: skewX(-25deg);
+            transition: 0.75s;
+        }
+        .cyber-card:hover::before {
+            left: 150%;
+        }
+        .cyber-card:hover {
+            transform: translate(-2px, -2px);
+            box-shadow: 8px 8px 0px var(--hot-pink);
+            border-color: var(--hot-pink);
+        }
+
+        /* Interactive Unique Premium Buttons */
+        .btn-premium {
+            background: #0b0f19;
+            color: #ffffff;
+            border: 2px solid #0b0f19;
+            padding: 10px 20px;
+            box-shadow: 3px 3px 0px var(--neon-green);
+            transition: all 0.2s ease;
+            text-transform: uppercase;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+        .btn-premium:hover {
+            background: var(--neon-green);
+            color: #0b0f19;
+            box-shadow: 5px 5px 0px #0b0f19;
+            transform: translate(-2px, -2px);
+        }
+        .btn-premium:active {
+            transform: translate(1px, 1px);
+            box-shadow: 1px 1px 0px #0b0f19;
+        }
+
+        .btn-pink {
+            box-shadow: 3px 3px 0px var(--hot-pink);
+        }
+        .btn-pink:hover {
+            background: var(--hot-pink);
+            color: #ffffff;
+            box-shadow: 5px 5px 0px #0b0f19;
+        }
+
+        /* Smooth scrolling */
+        html {
+            scroll-behavior: smooth;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #ffffff;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #0b0f19;
+            border-radius: 0px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--hot-pink);
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <canvas id="particle-canvas"></canvas>
+
+    <header class="fixed top-0 left-0 w-full z-50 bg-white/90 border-b-2 border-black px-6 py-4 flex justify-between items-center backdrop-blur-sm">
+        <div class="flex items-center gap-8">
+            <a href="#" class="heading-font text-2xl tracking-tighter text-black glitch-text">iTAZUKi</a>
+            <nav class="hidden md:flex items-center gap-6 text-sm font-bold uppercase tracking-wider">
+                <a href="#mint" class="hover:text-[var(--hot-pink)] transition-colors">Mint</a>
+                <a href="#stats" class="hover:text-[var(--cyber-cyan)] transition-colors">Live Stats</a>
+                <a href="#gallery" class="hover:text-[var(--neon-green)] transition-colors">Gallery</a>
+                <a href="#roadmap" class="hover:text-[var(--cyber-purple)] transition-colors">Ecosystem</a>
+                <a href="#faq" class="hover:text-[var(--hot-pink)] transition-colors">FAQ</a>
+            </nav>
+        </div>
+        <div class="flex items-center gap-4">
+            <span id="network-badge" class="hidden sm:inline-block px-3 py-1 text-xs border border-black bg-gray-100 font-bold uppercase">Disconnected</span>
+            <button id="btn-connect" onclick="connectWallet()" class="btn-premium text-xs heading-font">Connect Wallet</button>
+        </div>
+    </header>
+
+    <main class="pt-32 pb-16 px-4 max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 items-center min-h-[90vh]">
+        
+        <div class="lg:col-span-5 flex flex-col justify-center items-center lg:items-start space-y-6">
+            <div class="cyber-card p-2 bg-black inline-block transform -rotate-2">
+                <img id="hero-preview" src="https://raw.githubusercontent.com/itazukilab/itazukiimages/main/images/0.webp" onerror="this.src='https://placehold.co/600x600/0b0f19/00ff66?text=iTAZUKi'" alt="iTAZUKi Preview" class="w-full max-w-md h-auto object-cover border border-black">
+            </div>
+            <div class="text-center lg:text-left">
+                <h1 class="heading-font text-5xl md:text-7xl tracking-none uppercase text-black">iTAZUKi</h1>
+                <p class="text-sm uppercase tracking-widest text-gray-500 mt-2 font-bold">[ Phase 01: The Matrix Activation ]</p>
+            </div>
+        </div>
+
+        <div id="mint" class="lg:col-span-7">
+            <div class="cyber-card p-6 md:p-8 space-y-6">
+                <div class="flex justify-between items-center border-b-2 border-black pb-4">
+                    <div>
+                        <h2 class="heading-font text-2xl uppercase tracking-tight">Public Terminal</h2>
+                        <p class="text-xs text-gray-400 uppercase tracking-wider mt-0.5">Direct Smart Contract Portal</p>
+                    </div>
+                    <div class="text-right">
+                        <span id="mint-phase-badge" class="px-3 py-1 bg-black text-[var(--neon-green)] font-bold uppercase text-xs tracking-widest border border-black animate-pulse">Checking Chain...</span>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-3 gap-4 border-b-2 border-black pb-6">
+                    <div class="bg-gray-50 p-3 border border-black">
+                        <p class="text-xs uppercase text-gray-400 font-bold">Total Supply</p>
+                        <p class="text-xl font-bold heading-font mt-1">9,999</p>
+                    </div>
+                    <div class="bg-gray-50 p-3 border border-black">
+                        <p class="text-xs uppercase text-gray-400 font-bold">Minted</p>
+                        <p id="live-minted" class="text-xl font-bold heading-font mt-1 text-[var(--electric-blue)]">---</p>
+                    </div>
+                    <div class="bg-gray-50 p-3 border border-black">
+                        <p class="text-xs uppercase text-gray-400 font-bold">Remaining</p>
+                        <p id="live-remaining" class="text-xl font-bold heading-font mt-1 text-[var(--hot-pink)]">---</p>
+                    </div>
+                </div>
+
+                <div id="eligibility-container" class="bg-black text-white p-4 font-mono text-xs space-y-1 border-l-4 border-[var(--cyber-cyan)] hidden">
+                    <p class="text-[var(--cyber-cyan)] font-bold">> CONNECTED TERMINAL DIAGNOSTICS:</p>
+                    <p id="diagnostic-wallet">> Wallet: 0x...</p>
+                    <p id="diagnostic-free">> First Free Claim: Checking Status...</p>
+                </div>
+
+                <div class="space-y-4">
+                    <label class="block text-xs uppercase font-bold tracking-wider text-gray-600">Select Mint Allocation</label>
+                    <div class="flex items-center gap-4">
+                        <div class="flex items-center border-2 border-black bg-white">
+                            <button onclick="adjustQuantity(-1)" class="px-4 py-2 font-black text-xl hover:bg-gray-100 border-r-2 border-black transition-colors">-</button>
+                            <input type="text" id="mint-qty" value="1" readonly class="w-16 text-center font-bold heading-font text-lg focus:outline-none">
+                            <button onclick="adjustQuantity(1)" class="px-4 py-2 font-black text-xl hover:bg-gray-100 border-l-2 border-black transition-colors">+</button>
+                        </div>
+                        <div class="flex-1 text-right">
+                            <p class="text-xs uppercase text-gray-400 font-bold">Aggregated Pricing</p>
+                            <p id="calculated-cost" class="text-2xl font-black heading-font text-black">---</p>
+                        </div>
+                    </div>
+                    
+                    <div id="pricing-breakdown" class="bg-gray-50 border border-dashed border-black p-3 text-xs space-y-1 font-bold uppercase hidden">
+                        </div>
+                </div>
+
+                <div class="pt-2">
+                    <button id="btn-mint" onclick="executeMint()" disabled class="w-full btn-premium btn-pink py-4 text-center heading-font font-bold tracking-widest text-lg disabled:opacity-50 disabled:pointer-events-none">
+                        Connect Wallet to Mint
+                    </button>
+                </div>
+
+                <div id="tx-log" class="hidden p-4 bg-gray-50 border border-black font-mono text-xs space-y-2">
+                    <p id="tx-status-text" class="font-bold uppercase"></p>
+                    <a id="tx-etherscan" href="#" target="_blank" class="text-[var(--electric-blue)] underline block font-bold truncate"></a>
+                </div>
+
+            </div>
+        </div>
+    </main>
+
+    <section id="stats" class="bg-black text-white py-16 px-4 border-t-2 border-b-2 border-black">
+        <div class="max-w-7xl mx-auto">
+            <div class="mb-10 text-center lg:text-left">
+                <span class="text-xs font-bold uppercase text-[var(--neon-green)] tracking-widest">// SECURE METRIC TRACKING ENGINE</span>
+                <h2 class="heading-font text-3xl md:text-4xl uppercase mt-1">Live Collection Registry</h2>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                <div class="border border-gray-800 p-6 bg-neutral-900/50">
+                    <p class="text-xs uppercase text-gray-500 font-bold">Network Ecosystem</p>
+                    <p class="text-xl font-bold heading-font mt-2 text-[var(--cyber-cyan)]">Ethereum Mainnet</p>
+                </div>
+                <div class="border border-gray-800 p-6 bg-neutral-900/50">
+                    <p class="text-xs uppercase text-gray-500 font-bold">Smart Contract Target</p>
+                    <p class="text-sm font-mono tracking-tight mt-2 text-white truncate select-all">0xfb8C3C7a97285B62b1C32f3a4d1aaF6183Ab2bc5</p>
+                </div>
+                <div class="border border-gray-800 p-6 bg-neutral-900/50">
+                    <p class="text-xs uppercase text-gray-500 font-bold">Current Base Fee Rules</p>
+                    <p id="info-pricing-tier" class="text-xl font-bold heading-font mt-2 text-[var(--neon-green)]">---</p>
+                </div>
+                <div class="border border-gray-800 p-6 bg-neutral-900/50">
+                    <p class="text-xs uppercase text-gray-500 font-bold">Market Protocol Locked</p>
+                    <p id="info-trading-status" class="text-xl font-bold heading-font mt-2 text-[var(--hot-pink)]">---</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="gallery" class="py-20 px-4 max-w-7xl mx-auto">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-12 gap-4">
+            <div>
+                <span class="text-xs font-bold uppercase text-gray-400 tracking-widest">// REAL-TIME ARTIFACT INDEX</span>
+                <h2 class="heading-font text-4xl uppercase mt-1">On-Chain Asset Grid</h2>
+            </div>
+            <div class="flex gap-4 items-center">
+                <button onclick="navigateGallery(-1)" class="btn-premium px-4 py-2">&lt;</button>
+                <span id="gallery-pagination-label" class="font-bold text-sm tracking-widest uppercase">Tokens 0 - 7</span>
+                <button onclick="navigateGallery(1)" class="btn-premium px-4 py-2">&gt;</button>
+            </div>
+        </div>
+
+        <div id="gallery-grid" class="grid grid-cols-2 md:grid-cols-4 gap-6">
+            <div class="col-span-full text-center py-12 font-bold text-gray-400 animate-pulse uppercase">Syncing asset data from contract logs...</div>
+        </div>
+    </section>
+
+    <section class="py-20 bg-gray-50 border-t-2 border-b-2 border-black px-4">
+        <div class="max-w-4xl mx-auto text-center space-y-6">
+            <span class="text-xs font-bold uppercase tracking-widest text-[var(--cyber-purple)]">// PARADIGM SHIFT</span>
+            <p class="heading-font text-2xl md:text-4xl uppercase leading-tight text-black">
+                iTAZUKi IS A PROTOCOL-DRIVEN VISUAL SUITE EMBEDDED IN NEO-TOKYO CULTURE. 10,000 ARCHETYPES EVOLVING DIRECTLY ON THE ETHEREUM MAINNET LEDGER.
+            </p>
+            <div class="w-16 h-1 bg-black mx-auto"></div>
+        </div>
+    </section>
+
+    <section id="roadmap" class="py-20 px-4 max-w-7xl mx-auto">
+        <div class="text-center mb-16">
+            <span class="text-xs font-bold uppercase text-gray-400 tracking-widest">// ARCHITECTURE HORIZON</span>
+            <h2 class="heading-font text-4xl uppercase mt-1">Ecosystem Roadmap</h2>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div class="cyber-card p-6 space-y-4">
+                <div class="flex justify-between items-center border-b border-black pb-2">
+                    <span class="heading-font text-xl text-[var(--hot-pink)]">01 / GENESIS</span>
+                    <span class="text-xs bg-black text-white px-2 py-0.5 uppercase">Active</span>
+                </div>
+                <h3 class="heading-font text-lg uppercase font-bold">Ledger Decentralization</h3>
+                <p class="text-sm text-gray-600 leading-relaxed">
+                    Deployment of the gas-optimized ERC721A mint terminal. Distribution of all 10,000 archetypes. Enforcement of the anti-pre-listing framework ensuring absolute price discovery without early manipulation.
+                </p>
+            </div>
+
+            <div class="cyber-card p-6 space-y-4">
+                <div class="flex justify-between items-center border-b border-black pb-2">
+                    <span class="heading-font text-xl text-[var(--cyber-cyan)]">02 / EXTENSION</span>
+                    <span class="text-xs bg-gray-100 text-gray-500 px-2 py-0.5 uppercase">Locked</span>
+                </div>
+                <h3 class="heading-font text-lg uppercase font-bold">Ecosystem Reward Layer</h3>
+                <p class="text-sm text-gray-600 leading-relaxed">
+                    Launch of the native token framework tailored explicitly for holders. Execution of strategic partnerships and community rewards. Immediate allocation of secondary utility parameters to verified wallets.
+                </p>
+            </div>
+
+            <div class="cyber-card p-6 space-y-4">
+                <div class="flex justify-between items-center border-b border-black pb-2">
+                    <span class="heading-font text-xl text-[var(--neon-green)]">03 / EXPANSION</span>
+                    <span class="text-xs bg-gray-100 text-gray-500 px-2 py-0.5 uppercase">Locked</span>
+                </div>
+                <h3 class="heading-font text-lg uppercase font-bold">Marketplace Integration</h3>
+                <p class="text-sm text-gray-600 leading-relaxed">
+                    Lifting of the market lockout protocol. Activation of direct collection secondary trading. Integration with optimized native marketplaces and exclusive decentralized digital fashion lines.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <section id="faq" class="py-20 bg-gray-50 border-t-2 border-black px-4">
+        <div class="max-w-4xl mx-auto space-y-12">
+            <div class="text-center">
+                <span class="text-xs font-bold uppercase text-gray-400 tracking-widest">// MATRIX DIAGNOSTICS</span>
+                <h2 class="heading-font text-4xl uppercase mt-1">Frequently Asked Queries</h2>
+            </div>
+
+            <div class="space-y-6">
+                <div class="cyber-card p-6 bg-white">
+                    <h4 class="heading-font uppercase font-bold text-lg mb-2">What is the explicit base cost structure?</h4>
+                    <p class="text-sm text-gray-600">
+                        Every single unique wallet address is permitted 1 completely free mint allocation during the first tier phase. Subsequent tokens within the first 8,888 threshold cost exactly 0.0003 ETH each. Beyond 8,888 supply, the free tier terminates, and all mint transactions automatically shift to 0.0004 ETH per asset.
+                    </p>
+                </div>
+
+                <div class="cyber-card p-6 bg-white">
+                    <h4 class="heading-font uppercase font-bold text-lg mb-2">Why can't I trade or list my NFT on OpenSea immediately?</h4>
+                    <p class="text-sm text-gray-600">
+                        To guarantee real asset protection and prevent front-running bot systems from pre-listing assets below actual fair valuation, the contract includes an optimized market lockout rule. Secondary listing and swapping protocols remain strictly paused until manually initialized or supply terminates.
+                    </p>
+                </div>
+
+                <div class="cyber-card p-6 bg-white">
+                    <h4 class="heading-font uppercase font-bold text-lg mb-2">How efficient is the multi-mint gas structure?</h4>
+                    <p class="text-sm text-gray-600">
+                        The contract is compiled under native high-performance ERC721A rules. This allows users to mint multiple assets simultaneously (e.g. 10, 50, or hundreds of items) in a single unified block transaction for virtually the identical gas fee as a single item transaction.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="bg-black text-white py-12 px-6 border-t-4 border-black text-center space-y-6">
+        <p class="heading-font text-lg tracking-wider text-gray-400">iTAZUKi MATRIX INTERFACE // ALL SYSTEM OPERATIONAL</p>
+        <div class="flex justify-center gap-4 text-xs font-bold uppercase">
+            <a href="https://x.com/itazukilab" target="_blank" class="px-6 py-3 border border-gray-800 bg-neutral-900 hover:bg-[var(--hot-pink)] hover:text-white transition-colors duration-200">X Terminal</a>
+            <a href="https://opensea.io/assets/ethereum/0xfb8C3C7a97285B62b1C32f3a4d1aaF6183Ab2bc5" target="_blank" class="px-6 py-3 border border-gray-800 bg-neutral-900 hover:bg-[var(--cyber-cyan)] hover:text-black transition-colors duration-200">OpenSea Node</a>
+            <a href="https://etherscan.io/address/0xfb8C3C7a97285B62b1C32f3a4d1aaF6183Ab2bc5" target="_blank" class="px-6 py-3 border border-gray-800 bg-neutral-900 hover:bg-[var(--neon-green)] hover:text-black transition-colors duration-200">Etherscan Ledger</a>
+        </div>
+        <p class="text-[10px] text-gray-600 tracking-widest font-mono pt-4">&copy; 2026 ITAZUKI ARCHITECTURE. METADATA LINKED SECURELY TO GITHUB PRODUCTION RAWS.</p>
+    </footer>
+
+    <script>
+        // Production Target Setup
+        const CONTRACT_ADDRESS = "0xfb8C3C7a97285B62b1C32f3a4d1aaF6183Ab2bc5";
+        const ALCHEMY_RPCS = [
+            "https://eth-mainnet.g.alchemy.com/v2/fYKMDL9NELcMLpplFxENG",
+            "https://eth-mainnet.g.alchemy.com/v2/Jei0hdBnB76TsRhZsnx4e"
+        ];
+
+        // Decoupled Minimal ABI specification to run flawlessly without bloating single asset file
+        const CONTRACT_ABI = [
+            "function totalSupply() public view returns (uint256)",
+            "function MAX_SUPPLY() public view returns (uint256)",
+            "function TIER_THRESHOLD() public view returns (uint256)",
+            "function TIER_1_PRICE() public view returns (uint256)",
+            "function TIER_2_PRICE() public view returns (uint256)",
+            "function mintActive() public view returns (bool)",
+            "function tradingActive() public view returns (bool)",
+            "function hasClaimedFree(address) public view returns (bool)",
+            "function mint(uint256 quantity) external payable"
+        ];
+
+        // State Machine Cache
+        let provider = null;
+        let signer = null;
+        let rpcProvider = null;
+        let contractReadOnly = null;
+        let contractWrite = null;
+        
+        let userAddress = null;
+        let currentQuantity = 1;
+        let currentGalleryPage = 0;
+        const galleryItemsPerPage = 8;
+
+        // Dynamic State Variables Read from Blockchain Live
+        let blockchainState = {
+            totalSupply: 0,
+            maxSupply: 10000,
+            tierThreshold: 8888,
+            tier1Price: 300000000000000n, // 0.0003 ether
+            tier2Price: 400000000000000n, // 0.0004 ether
+            mintActive: false,
+            tradingActive: false,
+            userHasClaimedFree: false
+        };
+
+        // Window Lifecycle initialization
+        window.addEventListener('DOMContentLoaded', async () => {
+            initBackgroundFX();
+            await initializeReadOnlyFallbackRPC();
+            await syncLiveBlockchainMetrics();
+            renderGalleryGrid();
+            
+            // Auto sync logs every 15 seconds to keep dashboard alive
+            setInterval(syncLiveBlockchainMetrics, 15000);
+        });
+
+        // Fail-safe Fault Tolerant RPC Engine Setup
+        async function initializeReadOnlyFallbackRPC() {
+            for (let rpcUrl of ALCHEMY_RPCS) {
+                try {
+                    rpcProvider = new ethers.JsonRpcProvider(rpcUrl);
+                    // Fast check connection integrity
+                    await rpcProvider.getBlockNumber();
+                    contractReadOnly = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, rpcProvider);
+                    console.log("Fault-Tolerant RPC Linked Successfully: ", rpcUrl);
+                    return;
+                } catch (e) {
+                    console.warn("Target RPC Endpoint failure, migrating sequence... Error context: ", e);
+                }
+            }
+            console.error("Critical: Global infrastructure breakdown. All Alchmey Nodes offline.");
+        }
+
+        // Live Ledger Data Sync Engine
+        async function syncLiveBlockchainMetrics() {
+            if (!contractReadOnly) return;
+            try {
+                const [supply, max, threshold, t1Price, t2Price, active, trading] = await Promise.all([
+                    contractReadOnly.totalSupply(),
+                    contractReadOnly.MAX_SUPPLY(),
+                    contractReadOnly.TIER_THRESHOLD(),
+                    contractReadOnly.TIER_1_PRICE(),
+                    contractReadOnly.TIER_2_PRICE(),
+                    contractReadOnly.mintActive(),
+                    contractReadOnly.tradingActive()
+                ]);
+
+                blockchainState.totalSupply = Number(supply);
+                blockchainState.maxSupply = Number(max);
+                blockchainState.tierThreshold = Number(threshold);
+                blockchainState.tier1Price = t1Price;
+                blockchainState.tier2Price = t2Price;
+                blockchainState.mintActive = active;
+                blockchainState.tradingActive = trading;
+
+                // Sync UI Layers instantly
+                document.getElementById('live-minted').innerText = blockchainState.totalSupply.toLocaleString();
+                document.getElementById('live-remaining').innerText = (blockchainState.maxSupply - blockchainState.totalSupply).toLocaleString();
+                
+                const phaseBadge = document.getElementById('mint-phase-badge');
+                if (!blockchainState.mintActive) {
+                    phaseBadge.innerText = "MINT PAUSED";
+                    phaseBadge.className = "px-3 py-1 bg-red-600 text-white font-bold uppercase text-xs tracking-widest border border-black";
+                } else if (blockchainState.totalSupply >= blockchainState.tierThreshold) {
+                    phaseBadge.innerText = "TIER 2: 0.0004 ETH";
+                    phaseBadge.className = "px-3 py-1 bg-black text-[var(--hot-pink)] font-bold uppercase text-xs tracking-widest border border-black animate-pulse";
+                } else {
+                    phaseBadge.innerText = "TIER 1: 1 FREE + 0.0003 ETH";
+                    phaseBadge.className = "px-3 py-1 bg-black text-[var(--neon-green)] font-bold uppercase text-xs tracking-widest border border-black animate-pulse";
+                }
+
+                document.getElementById('info-pricing-tier').innerText = blockchainState.totalSupply >= blockchainState.tierThreshold ? "0.0004 ETH (Fixed)" : "1 Free / 0.0003 ETH";
+                document.getElementById('info-trading-status').innerText = blockchainState.tradingActive ? "UNLOCKED" : "LOCKED (Market Blocked)";
+                document.getElementById('info-trading-status').className = `text-xl font-bold heading-font mt-2 ${blockchainState.tradingActive ? 'text-[var(--neon-green)]' : 'text-[var(--hot-pink)]'}`;
+
+                // If user is connected, check their individual claim rule
+                if (userAddress) {
+                    blockchainState.userHasClaimedFree = await contractReadOnly.hasClaimedFree(userAddress);
+                    document.getElementById('diagnostic-free').innerText = `> First Free Claim: ${blockchainState.userHasClaimedFree ? "USED" : "AVAILABLE"}`;
+                }
+
+                recalculatePriceMatrix();
+
+            } catch (err) {
+                console.error("Ledger polling failure context: ", err);
+            }
+        }
+
+        // Multi-Wallet EIP-1193 Provider Routing Core Architecture
+        async function connectWallet() {
+            let injectedProvider = null;
+
+            if (window.ethereum) {      
+                if (window.ethereum.providers && window.ethereum.providers.length > 0) {      
+                    injectedProvider = window.ethereum.providers[0];      
+                } else {      
+                    injectedProvider = window.ethereum;      
+                }      
+            } else if (window.okxwallet) {      
+                injectedProvider = window.okxwallet;      
+            } else if (window.phantom && window.phantom.ethereum) {      
+                injectedProvider = window.phantom.ethereum;      
+            } else if (window.keplr && window.keplr.ethereum) {      
+                injectedProvider = window.keplr.ethereum;      
+            }
+
+            if (!injectedProvider) {
+                alert("No EIP-1193 crypto extensions located. Install MetaMask, OKX, or Phantom.");
+                return;
+            }
+
+            try {
+                provider = new ethers.BrowserProvider(injectedProvider);
+                const accounts = await provider.send("eth_requestAccounts", []);
+                signer = await provider.getSigner();
+                userAddress = accounts[0];
+                contractWrite = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, signer);
+
+                // Setup Listeners
+                injectedProvider.on('accountsChanged', (accs) => {
+                    if(accs.length === 0) disconnectWallet();
+                    else { userAddress = accs[0]; syncActiveSessionUI(); }
+                });
+                injectedProvider.on('chainChanged', () => window.location.reload());
+
+                await syncActiveSessionUI();
+
+            } catch (err) {
+                console.error("Wallet hook denied:", err);
+            }
+        }
+
+        function disconnectWallet() {
+            provider = null;
+            signer = null;
+            userAddress = null;
+            contractWrite = null;
+
+            document.getElementById('btn-connect').innerText = "Connect Wallet";
+            document.getElementById('network-badge').innerText = "Disconnected";
+            document.getElementById('network-badge').className = "hidden sm:inline-block px-3 py-1 text-xs border border-black bg-gray-100 font-bold uppercase";
+            document.getElementById('eligibility-container').classList.add('hidden');
+            
+            const btnMint = document.getElementById('btn-mint');
+            btnMint.innerText = "Connect Wallet to Mint";
+            btnMint.disabled = true;
+
+            recalculatePriceMatrix();
+        }
+
+        async function syncActiveSessionUI() {
+            if (!userAddress) return;
+            
+            // Track network layer safety bounds
+            const network = await provider.getNetwork();
+            const isMainnet = network.chainId === 1n;
+
+            const badge = document.getElementById('network-badge');
+            badge.innerText = isMainnet ? "Mainnet Connected" : "Wrong Network";
+            badge.className = `hidden sm:inline-block px-3 py-1 text-xs border border-black font-bold uppercase ${isMainnet ? 'bg-[var(--neon-green)] text-black' : 'bg-red-600 text-white'}`;
+
+            document.getElementById('btn-connect').innerText = `${userAddress.substring(0,6)}...${userAddress.substring(userAddress.length-4)}`;
+            
+            document.getElementById('diagnostic-wallet').innerText = `> Wallet: ${userAddress}`;
+            document.getElementById('eligibility-container').classList.remove('hidden');
+
+            const btnMint = document.getElementById('btn-mint');
+            if (!blockchainState.mintActive) {
+                btnMint.innerText = "Mint Terminated/Paused";
+                btnMint.disabled = true;
+            } else if (!isMainnet) {
+                btnMint.innerText = "Switch to Ethereum Mainnet";
+                btnMint.disabled = true;
+            } else {
+                btnMint.innerText = "Execute Mint Order";
+                btnMint.disabled = false;
+            }
+
+            await syncLiveBlockchainMetrics();
+        }
+
+        // Live Interactive Quantity Controller Matrix
+        function adjustQuantity(delta) {
+            currentQuantity += delta;
+            if (currentQuantity < 1) currentQuantity = 1;
+            // Prevent theoretical bounds overflow check
+            if (currentQuantity > 1000) currentQuantity = 1000; 
+
+            document.getElementById('mint-qty').value = currentQuantity;
+            recalculatePriceMatrix();
+        }
+
+        // Complete Math Engine mapping exactly to solidity multi-tier logic boundaries
+        function recalculatePriceMatrix() {
+            let totalCostWei = 0n;
+            let currentId = blockchainState.totalSupply;
+            let qty = currentQuantity;
+
+            let breakdownHtml = "";
+
+            if (!userAddress) {
+                document.getElementById('calculated-cost').innerText = "---";
+                document.getElementById('pricing-breakdown').classList.add('hidden');
+                return;
+            }
+
+            if (currentId < blockchainState.tierThreshold) {
+                let freeAvailable = !blockchainState.userHasClaimedFree;
+                let paidQty = qty;
+
+                if (freeAvailable) {
+                    breakdownHtml += `<p class="text-[var(--neon-green)]">> 1 Allocation: FREE MINT CLAIMED</p>`;
+                    paidQty = qty - 1;
+                }
+
+                if (currentId + qty <= blockchainState.tierThreshold) {
+                    let cost = BigInt(paidQty) * blockchainState.tier1Price;
+                    totalCostWei = cost;
+                    if (paidQty > 0) {
+                        breakdownHtml += `<p>> ${paidQty} Allocation x 0.0003 ETH (Tier 1 Pricing)</p>`;
+                    }
+                } else {
+                    let tier1Count = blockchainState.tierThreshold - currentId;
+                    let tier2Count = qty - tier1Count;
+
+                    let tier1Paid = tier1Count;
+                    if (freeAvailable) {
+                        if (tier1Count > 0) {
+                            tier1Paid = tier1Count - 1;
+                        } else {
+                            tier2Count = tier2Count - 1;
+                        }
+                    }
+
+                    let costT1 = BigInt(tier1Paid) * blockchainState.tier1Price;
+                    let costT2 = BigInt(tier2Count) * blockchainState.tier2Price;
+                    totalCostWei = costT1 + costT2;
+
+                    if(tier1Paid > 0) breakdownHtml += `<p>> ${tier1Paid} Allocation x 0.0003 ETH (Tier 1 Cross Boundary)</p>`;
+                    if(tier2Count > 0) breakdownHtml += `<p>> ${tier2Count} Allocation x 0.0004 ETH (Tier 2 Shift)</p>`;
+                }
+            } else {
+                totalCostWei = BigInt(qty) * blockchainState.tier2Price;
+                breakdownHtml += `<p>> ${qty} Allocation x 0.0004 ETH (Tier 2 Standard Rule)</p>`;
+            }
+
+            const totalEthString = ethers.formatEther(totalCostWei);
+            document.getElementById('calculated-cost').innerText = `${totalEthString} ETH`;
+
+            const breakdownContainer = document.getElementById('pricing-breakdown');
+            if (breakdownHtml !== "") {
+                breakdownContainer.innerHTML = breakdownHtml + `<p class="border-t border-black mt-1 pt-1 text-black font-black">> Final Cost: ${totalEthString} ETH</p>`;
+                breakdownContainer.classList.remove('hidden');
+            } else {
+                breakdownContainer.classList.add('hidden');
+            }
+        }
+
+        // Direct Core Transaction Execution Engine
+        async function executeMint() {
+            if (!contractWrite || !userAddress) return;
+
+            const btnMint = document.getElementById('btn-mint');
+            const logContainer = document.getElementById('tx-log');
+            const statusText = document.getElementById('tx-status-text');
+            const etherscanLink = document.getElementById('tx-etherscan');
+
+            try {
+                btnMint.disabled = true;
+                btnMint.innerText = "Awaiting Web3 Signature...";
+                
+                logContainer.classList.remove('hidden');
+                statusText.innerText = "Status: Broadcasting Request to Injected Layer...";
+                statusText.className = "font-bold uppercase text-yellow-600 animate-pulse";
+                etherscanLink.innerText = "";
+
+                // Calculate cost parameters ahead of instantiation for verification
+                let totalCostWei = 0n;
+                let currentId = blockchainState.totalSupply;
+                let qty = currentQuantity;
+
+                if (currentId < blockchainState.tierThreshold) {
+                    let freeAvailable = !blockchainState.userHasClaimedFree;
+                    let paidQty = qty;
+                    if (freeAvailable) paidQty = qty - 1;
+
+                    if (currentId + qty <= blockchainState.tierThreshold) {
+                        totalCostWei = BigInt(paidQty) * blockchainState.tier1Price;
+                    } else {
+                        let tier1Count = blockchainState.tierThreshold - currentId;
+                        let tier2Count = qty - tier1Count;
+                        let tier1Paid = freeAvailable ? (tier1Count > 0 ? tier1Count - 1 : 0) : tier1Count;
+                        if (freeAvailable && tier1Count === 0) tier2Count = tier2Count - 1;
+                        totalCostWei = (BigInt(tier1Paid) * blockchainState.tier1Price) + (BigInt(tier2Count) * blockchainState.tier2Price);
+                    }
+                } else {
+                    totalCostWei = BigInt(qty) * blockchainState.tier2Price;
+                }
+
+                // Fire transaction directly to evm pool
+                const tx = await contractWrite.mint(currentQuantity, { value: totalCostWei });
+                
+                statusText.innerText = "Status: Transaction Broadcasted! Awaiting Confirmation...";
+                statusText.className = "font-bold uppercase text-blue-600 animate-pulse";
+                etherscanLink.innerText = `Hash: ${tx.hash}`;
+                etherscanLink.href = `https://etherscan.io/tx/${tx.hash}`;
+
+                // Wait for miners to write to node block ledger
+                const receipt = await tx.wait();
+
+                if(receipt.status === 1) {
+                    statusText.innerText = "Status: Transmutation Complete! Mint Successful.";
+                    statusText.className = "font-bold uppercase text-[var(--neon-green)]";
+                } else {
+                    statusText.innerText = "Status: Blockchain Execution Failed (Reverted).";
+                    statusText.className = "font-bold uppercase text-red-600";
+                }
+
+                await syncLiveBlockchainMetrics();
+
+            } catch (err) {
+                console.error("Execution failure context: ", err);
+                statusText.innerText = `Status: Block Rejected / ${err.reason || err.message || "User Aborted"}`;
+                statusText.className = "font-bold uppercase text-red-600";
+            } finally {
+                btnMint.disabled = false;
+                btnMint.innerText = "Execute Mint Order";
+            }
+        }
+
+        // On-Chain Metadata Virtualization & Lazy-Loaded Gallery System 
+        function renderGalleryGrid() {
+            const container = document.getElementById('gallery-grid');
+            container.innerHTML = "";
+
+            let startToken = currentGalleryPage * galleryItemsPerPage;
+            
+            document.getElementById('gallery-pagination-label').innerText = `Tokens ${startToken} - ${startToken + galleryItemsPerPage - 1}`;
+
+            for (let i = 0; i < galleryItemsPerPage; i++) {
+                let tokenId = startToken + i;
+                if(tokenId >= 10000) break;
+
+                const card = document.createElement('div');
+                card.className = "cyber-card p-3 bg-white space-y-2 group cursor-pointer";
+                card.onclick = () => {
+                    document.getElementById('hero-preview').src = `https://raw.githubusercontent.com/itazukilab/itazukiimages/main/images/${tokenId}.webp`;
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                };
+
+                // Premium lazy dynamic images routing direct to main git raw files
+                card.innerHTML = `
+                    <div class="overflow-hidden border border-black bg-gray-50 aspect-square relative">
+                        <img src="https://raw.githubusercontent.com/itazukilab/itazukiimages/main/images/${tokenId}.webp" 
+                             onerror="this.src='https://placehold.co/400x400/0b0f19/ff007f?text=iTAZUKi+${tokenId}'"
+                             alt="Itazuki Archetype" 
+                             loading="lazy"
+                             class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110 group-hover:rotate-1">
+                    </div>
+                    <div class="flex justify-between items-center text-xs font-bold pt-1">
+                        <span class="heading-font text-black">ITAZUKI #${tokenId}</span>
+                        <span class="text-gray-400 font-mono">[VIEW]</span>
+                    </div>
+                `;
+                container.appendChild(card);
+            }
+        }
+
+        function navigateGallery(direction) {
+            currentGalleryPage += direction;
+            if (currentGalleryPage < 0) currentGalleryPage = 0;
+            // Cap to theoretical total allocation pages bounds max
+            if (currentGalleryPage > Math.floor(9999 / galleryItemsPerPage)) currentGalleryPage = Math.floor(9999 / galleryItemsPerPage);
+            renderGalleryGrid();
+        }
+
+        // High-Performance Ambient Neo-Tokyo Layer FX Matrix Canvas
+        function initBackgroundFX() {
+            const canvas = document.getElementById('particle-canvas');
+            const ctx = canvas.getContext('2d');
+
+            let width = canvas.width = window.innerWidth;
+            let height = canvas.height = window.innerHeight;
+
+            window.addEventListener('resize', () => {
+                width = canvas.width = window.innerWidth;
+                height = canvas.height = window.innerHeight;
+            });
+
+            // Struct allocation for minimal overhead particles
+            class Particle {
+                constructor() {
+                    this.x = Math.random() * width;
+                    this.y = Math.random() * height;
+                    this.size = Math.random() * 2 + 1;
+                    this.speedY = Math.random() * 0.4 + 0.1;
+                    this.color = Math.random() > 0.5 ? 'rgba(0, 255, 102, 0.15)' : 'rgba(255, 0, 127, 0.12)';
+                }
+                update() {
+                    this.y -= this.speedY;
+                    if (this.y < 0) {
+                        this.y = height;
+                        this.x = Math.random() * width;
+                    }
+                }
+                draw() {
+                    ctx.fillStyle = this.color;
+                    ctx.fillRect(this.x, this.y, this.size, this.size);
+                }
+            }
+
+            const particlePool = Array.from({ length: 45 }, () => new Particle());
+
+            function animate() {
+                ctx.clearRect(0, 0, width, height);
+                for (let i = 0; i < particlePool.length; i++) {
+                    particlePool[i].update();
+                    particlePool[i].draw();
+                }
+                requestAnimationFrame(animate);
+            }
+            animate();
+        }
+    </script>
+</body>
+</html>
